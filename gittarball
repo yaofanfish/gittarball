@@ -14,7 +14,7 @@ p.add_argument("-v", "--verbose", action="count", default=0, help="verbosity")
 
 args = p.parse_args()
 
-pattern = r"(?:https?://)?github\.com/([\w-]+)/([\w-]+)"
+pattern = r"(?:(?:https?://)?github\.com/)?([\w-]+)/([\w-]+)"
 m = re.search(pattern, args.url)
 url = f"https://github.com/{m.group(1)}/{m.group(2)}/archive/refs/heads/{args.branch}.tar.gz" # https://github.com/yaofanfish/where/archive/refs/heads/main.tar.gz
 # api.github.com/repos/user123/repo123/tarball
