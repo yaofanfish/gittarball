@@ -1,0 +1,35 @@
+#!/usr/bin/python3
+
+import sys, os, subprocess
+import argparse, re
+import code
+
+p = argparse.ArgumentParser("curl the tarball instead of using git (faster on network, heavier on CPU")
+p.add_argument("url", help="the github url")
+p.add_argument("-b", "--branch", default="main", help="branch name")
+p.add_argument("-o", "--output", default="tarball.tar.gz", help="name of the tarball")
+p.add_argument("-x", "--extract", action="store_true", help="Automatically extract")
+p.add_argument("-d", "--delete", action="store_true", help="Delete the tarball (after extracting)")
+p.add_argument("-v", "--verbose", action="count", default=0, help="verbosity")
+
+args = p.parse_args()
+
+pattern = r"(?:https?://)?github\.com/([a-zA-Z]+)/([a-zA-Z]+)"
+m = re.search(pattern, args.url)
+url = f"https://github.com/{m.group(1)}/{m.group(2)}/archive/refs/heads/{args.branch}.tar.gz" # https://github.com/yaofanfish/where/archive/refs/heads/main.tar.gz
+# api.github.com/repos/user123/repo123/tarball
+#code.interact(local=dict(globals(), **locals()))
+
+_exec = ["curl", "-L", url, "-o", args.output]
+if args.verbose:
+	print(" ".join(_exec))
+
+subprocess.run(_exec)
+
+if args.extract:
+	_exec = ["tar", "-xf", args.output]
+	if args.verbose:
+		_exec += ["-"+"v"*args.verbose]
+	subprocess.run(_exec)
+if args.delete:
+	os.remove(args.output)
